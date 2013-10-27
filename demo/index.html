@@ -13,7 +13,38 @@
     <![endif]-->
   </head>
   <body>
-    <h1>Hello, world!</h1>
+
+	<div class="container" id="bledger">
+		<div class="row">
+
+			<div class="col-md-6">
+				<center>In</center>
+				<form id="form-in">
+					<input name="direction" type="hidden" value="in" />
+					<input name="amount" placeholder="amount" />
+					<input name="tags" placeholder="tags (comma-separated)" />
+					<input name="description" placeholder="description" />
+					<input type="submit" value="add" />
+				</form>
+			</div>
+			<div class="col-md-6">
+				<center>Out</center>
+				<form id="form-out">
+					<input name="direction" type="hidden" value="out" />
+					<input name="amount" placeholder="amount" />
+					<input name="tags" placeholder="tags (comma-separated)" />
+					<input name="description" placeholder="description" />
+					<input type="submit" value="add" />
+				</form>
+			</div>
+
+			<div class="col-md-6" id="bl-in">
+			</div>
+			<div class="col-md-6" id="bl-out">
+			</div>
+
+		</div>
+	</div>
 
     <!-- firebase client library -->
 	<script src="https://cdn.firebase.com/v0/firebase.js"></script>
