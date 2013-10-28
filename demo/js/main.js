@@ -4,6 +4,7 @@ bl = {
 	$lin: null,
 	$lout: null,
 	balance: {},
+	balRef: null,
 	daily: null,
 	root: new Firebase('https://bledger.firebaseIO.com/'),
 	vals: {},
@@ -36,19 +37,9 @@ bl = {
 			bl.current.off('child_added')
 		};
 		bl.current = bl.daily.child(day);
-		bl.current.on('value', function(snap) {
-			var vals = snap.val();
-			bl.day = snap.name();
-			bl.vals[bl.day] = vals;
-			if (bl.vals[bl.day] == null) {
-				bl.vals[bl.day] = [];
-			}
-			console.log('Done Values ' + bl.day + ': ' + vals);
-			bl.$lin.text('');
-			bl.$lout.text('');
-			bl.display_day(vals);
-			bl.current.off('value');
-		});
+		bl.$lin.text('');
+		bl.$lout.text('');
+		bl.day = day;
 		bl.current.on('child_added', function(snap) {
 			val = snap.val();
 			console.log('Add Values ' + snap.name() + ': ' + val);
@@ -81,6 +72,25 @@ bl = {
 		balRef = bl.root.child('balance').child(day);
 		bl.balance[day] = balance;
 		balRef.set(balance);
+	},
+
+	getBalance: function() {
+		bl.balRef.on('value', function(snap) {
+			var vals = snap.val();
+			console.log('Done ' + snap.name() + ': ' + vals);
+			bl.balance = vals;
+		});
+	},
+
+	getValues: function() {
+		bl.daily.on('value', function(snap) {
+			var vals = snap.val();
+			console.log('Got values ' + snap.name() + ': ' + vals);
+			bl.vals = vals;
+			bl.$lin.text('');
+			bl.$lout.text('');
+			bl.display_day(vals[bl.day]);
+		});
 	},
 
 	display: function(i, e) {
@@ -129,9 +139,12 @@ bl = {
 	init: function() {
 		var now = new Date();
 		var today = now.toISOString().split('T')[0];
+		bl.balRef = bl.root.child('balance');
 		bl.daily = bl.root.child('daily');
 		bl.choose_day(today);
 		bl.$day.val(today);
+		bl.getBalance();
+		bl.getValues();
 	}
 
 };
