@@ -62,7 +62,8 @@ bl.choose_day = function(day) {
 };
 
 bl.start = function() {
-	var today = '2013-10-26';
+	var now = new Date();
+	var today = now.toISOString().split('T')[0];
 	bl.daily = bl.root.child('daily');
 	bl.choose_day(today);
 	$('#bl-day').val(today);
