@@ -6,6 +6,7 @@ bl = {
 	$lin: null,
 	$lout: null,
 	vals: {},
+	balance: {},
 
 	add: function(entry) {
 		var now = new Date();
@@ -28,6 +29,33 @@ bl = {
 		bl.vals[bl.day][time] = entry;
 		tRef.set(entry);
 		return time;
+	},
+
+	computeBalance: function(day) {
+		var now, yest, yesterday, balRef;
+		var balance = 0;
+		if (day) {
+			now = new Date(day);
+			yest = new Date(day);
+		} else {
+			now = new Date();
+			yest = new Date();
+			day = now.toISOString().split('T')[0];
+		}
+		yest.setDate(now.getDate() - 1);
+		yesterday = yest.toISOString().split('T')[0];
+		$.each(
+			bl.vals[day],
+			function(i, e) {
+				if (e.direction == 'in') {
+					balance = balance + parseInt(e.amount);
+				} else {
+					balance = balance - parseInt(e.amount);
+				}
+			});
+		balRef = bl.root.child('balance').child(day);
+		bl.balance[day] = balance;
+		balRef.set(balance);
 	},
 
 	flush: function() {
