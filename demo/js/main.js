@@ -82,9 +82,10 @@ $(function(){
 	bl.init();
 
 	$('#form-day').submit(function(e) {
-		var today = $bl.day.val();
-		$bl.$lin.text('');
-		$bl.$lout.text('');
+		var today = bl.$day.val();
+		console.log('Chosen ' + today);
+		bl.$lin.text('');
+		bl.$lout.text('');
 		bl.choose_day(today);
 		return false
 	});
