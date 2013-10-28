@@ -28,7 +28,7 @@ bl = {
 		else
 			entry.amount = 0;
 		bl.vals[bl.day][time] = entry;
-		bl.balance[bl.day] += entry.amount;
+		bl.setBalance(bl.day, bl.balance[bl.day] + entry.amount);
 		tRef.set(entry);
 		return time;
 	},
@@ -133,11 +133,16 @@ bl = {
 		console.log('Remove ' + eid);
 		var $row = $('#row-' + eid);
 		var tRef = bl.current.child(eid);
+		bl.setBalance(bl.day, bl.balance[bl.day] - bl.vals[bl.day][eid].amount);
 		tRef.remove();
-		bl.balance[bl.day] -= bl.vals[bl.day][eid].amount;
 		bl.vals[bl.day][eid] = null;
 		$row.hide();
 		return false;
+	},
+
+	setBalance: function(day, bal) {
+		bl.balRef.child(day).set(bal);
+		bl.balance[day] = bal;
 	},
 
 	init: function() {
