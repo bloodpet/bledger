@@ -1,62 +1,86 @@
-var bl = {};
-var aoeu;
+var bl = {
+	root: new Firebase('https://bledger.firebaseIO.com/'),
+	daily: null,
+	$lin: null,
+	$lout: null,
+	vals: []
+};
 
-$(function(){
-	var $l = $('#bledger');
-	var $lin = $('#bl-in');
-	var $lout = $('#bl-out');
-	bl.root = {};
-	bl.ref = new Firebase('https://bledger.firebaseIO.com/');
-	bl.vals = [];
+bl.add = function(direction, amount, tags, description) {
+	var entry = {
+		direction: direction,
+		amount: amount,
+		tags: tags,
+		description: description,
+	};
+	bl.vals.push(entry);
+	bl.current.set(bl.vals);
+};
 
-	bl.add = function(direction, amount, tags, description) {
-		var entry = {
-			direction: direction,
-			amount: amount,
-			tags: tags,
-			description: description,
-		};
-		bl.vals.push(entry);
-		bl.test.set(bl.vals);
+bl.flush = function() {
+	bl.current.set([])
+};
+
+bl.display = function(i, e) {
+	var tags = '';
+	if (e.tags) tags = e.tags;
+	$row = $('<div class="row">' +
+		'<div class="col-md-4">' + e.amount + '</div>' +
+		'<div class="col-md-4">' + tags + '</div>' +
+		'<div class="col-md-4">' + e.description + '</div>' +
+		'</div>');
+	if (e.direction == 'in') {
+		bl.$lin.prepend($row);
+	} else {
+		bl.$lout.prepend($row);
 	}
+};
 
-	bl.flush = function() {
-		bl.test.set([])
-	}
-
-	bl.display = function (i, e) {
-		var tags = '';
-		if (e.tags) tags = e.tags;
-		$row = $('<div class="row">' +
-			'<div class="col-md-4">' + e.amount + '</div>' +
-			'<div class="col-md-4">Tags: ' + tags + '</div>' +
-			'<div class="col-md-4">Desc: ' + e.description + '</div>' +
-			'</div>');
-		if (e.direction == 'in') {
-			$lin.prepend($row);
-		} else {
-			$lout.prepend($row);
-		}
-	}
-
-	bl.test = new Firebase('https://bledger.firebaseIO.com/test/');
-	bl.test.on('value', function(snap) {
+bl.choose_day = function(day) {
+	if (bl.current) {
+		bl.current.off('child_added')
+	};
+	bl.current = bl.daily.child(day);
+	bl.current.on('value', function(snap) {
 		bl.vals = snap.val();
 		if (bl.vals == null) {
 			bl.vals = [];
-			bl.test.set([]);
+			bl.current.set([]);
 		}
 		console.log('Values ' + snap.name() + ': ' + bl.vals);
-		bl.test.off('value');
+		bl.current.off('value');
 	});
-	bl.test.on('child_added', function(snap) {
+	bl.current.on('child_added', function(snap) {
 		val = snap.val();
 		if (val == null) {
 			bl.vals = [];
-			bl.test.set([]);
+			bl.current.set([]);
 		}
 		console.log('Values ' + snap.name() + ': ' + val);
 		bl.display(0, val);
+	});
+};
+
+bl.start = function() {
+	var today = '2013-10-26';
+	bl.daily = bl.root.child('daily');
+	bl.choose_day(today);
+	$('#bl-day').val(today);
+};
+
+$(function(){
+	var $l = $('#bledger');
+	bl.$lin = $('#bl-in');
+	bl.$lout = $('#bl-out');
+
+	bl.start();
+
+	$('#form-day').submit(function(e) {
+		var today = $('#bl-day').val();
+		$('#bl-in').text('');
+		$('#bl-out').text('');
+		bl.choose_day(today);
+		return false
 	});
 
 	$('#form-in').submit(function(e) {
