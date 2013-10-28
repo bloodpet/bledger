@@ -21,8 +21,7 @@ bl = {
 		tags.sort();
 		entry.tags = tags;
 		entry.time = time;
-		console.log(entry);
-		bl.vals[time] = entry;
+		bl.vals[bl.day][time] = entry;
 		tRef.set(entry);
 		return time;
 	},
@@ -53,12 +52,20 @@ bl = {
 		});
 	},
 
+	display_day: function(vals) {
+		if (vals) {
+			$.each(vals, function(k, v) {
+				bl.display(k, v);
+			})
+		};
+	},
+
 	remove: function(eid) {
 		console.log('Remove ' + eid);
 		var $row = $('#row-' + eid);
 		var tRef = bl.current.child(eid);
 		tRef.remove();
-		bl.vals[eid] = null;
+		bl.vals[bl.day][eid] = null;
 		$row.hide();
 	},
 
@@ -68,19 +75,21 @@ bl = {
 		};
 		bl.current = bl.daily.child(day);
 		bl.current.on('value', function(snap) {
-			bl.vals = snap.val();
-			if (bl.vals == null) {
-				bl.vals = [];
+			var vals = snap.val();
+			bl.day = snap.name();
+			bl.vals[bl.day] = vals;
+			if (bl.vals[bl.day] == null) {
+				bl.vals[bl.day] = [];
 			}
-			console.log('Values ' + snap.name() + ': ' + bl.vals);
+			console.log('Done Values ' + bl.day + ': ' + vals);
+			bl.$lin.text('');
+			bl.$lout.text('');
+			bl.display_day(vals);
 			bl.current.off('value');
 		});
 		bl.current.on('child_added', function(snap) {
 			val = snap.val();
-			if (val == null) {
-				bl.vals = [];
-			}
-			console.log('Values ' + snap.name() + ': ' + val);
+			console.log('Add Values ' + snap.name() + ': ' + val);
 			bl.display(0, val);
 		});
 	},
@@ -109,6 +118,7 @@ $(function(){
 		console.log('Chosen ' + today);
 		bl.$lin.text('');
 		bl.$lout.text('');
+		bl.display_day(bl.vals[today]);
 		bl.choose_day(today);
 		return false
 	});
