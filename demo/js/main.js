@@ -21,6 +21,10 @@ bl = {
 		tags.sort();
 		entry.tags = tags;
 		entry.time = time;
+		if (entry.amount)
+			entry.amount = parseInt(entry.amount);
+		else
+			entry.amount = 0;
 		bl.vals[bl.day][time] = entry;
 		tRef.set(entry);
 		return time;
