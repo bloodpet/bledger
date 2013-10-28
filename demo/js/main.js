@@ -71,7 +71,6 @@ bl = {
 			bl.vals = snap.val();
 			if (bl.vals == null) {
 				bl.vals = [];
-				bl.current.set([]);
 			}
 			console.log('Values ' + snap.name() + ': ' + bl.vals);
 			bl.current.off('value');
@@ -80,7 +79,6 @@ bl = {
 			val = snap.val();
 			if (val == null) {
 				bl.vals = [];
-				bl.current.set([]);
 			}
 			console.log('Values ' + snap.name() + ': ' + val);
 			bl.display(0, val);
