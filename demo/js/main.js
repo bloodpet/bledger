@@ -14,7 +14,13 @@ bl = {
 			now.getSeconds() + '-' +
 			now.getMilliseconds();
 		var tRef = bl.current.child(time);
-		entry['time'] = time;
+		var tags = [];
+		$.each(entry.tags.split(','), function(i, e) {
+			tags.push(e.trim());
+		});
+		tags.sort();
+		entry.tags = tags;
+		entry.time = time;
 		console.log(entry);
 		bl.vals[time] = entry;
 		tRef.set(entry);
