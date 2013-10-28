@@ -1,12 +1,12 @@
 var bl;
 
 bl = {
-	root: new Firebase('https://bledger.firebaseIO.com/'),
-	daily: null,
 	$lin: null,
 	$lout: null,
-	vals: {},
 	balance: {},
+	daily: null,
+	root: new Firebase('https://bledger.firebaseIO.com/'),
+	vals: {},
 
 	add: function(entry) {
 		var now = new Date();
@@ -29,6 +29,31 @@ bl = {
 		bl.vals[bl.day][time] = entry;
 		tRef.set(entry);
 		return time;
+	},
+
+	choose_day: function(day) {
+		if (bl.current) {
+			bl.current.off('child_added')
+		};
+		bl.current = bl.daily.child(day);
+		bl.current.on('value', function(snap) {
+			var vals = snap.val();
+			bl.day = snap.name();
+			bl.vals[bl.day] = vals;
+			if (bl.vals[bl.day] == null) {
+				bl.vals[bl.day] = [];
+			}
+			console.log('Done Values ' + bl.day + ': ' + vals);
+			bl.$lin.text('');
+			bl.$lout.text('');
+			bl.display_day(vals);
+			bl.current.off('value');
+		});
+		bl.current.on('child_added', function(snap) {
+			val = snap.val();
+			console.log('Add Values ' + snap.name() + ': ' + val);
+			bl.display(0, val);
+		});
 	},
 
 	computeBalance: function(day) {
@@ -56,10 +81,6 @@ bl = {
 		balRef = bl.root.child('balance').child(day);
 		bl.balance[day] = balance;
 		balRef.set(balance);
-	},
-
-	flush: function() {
-		bl.current.set([])
 	},
 
 	display: function(i, e) {
@@ -92,6 +113,10 @@ bl = {
 		};
 	},
 
+	flush: function() {
+		bl.current.set([])
+	},
+
 	remove: function(eid) {
 		console.log('Remove ' + eid);
 		var $row = $('#row-' + eid);
@@ -99,31 +124,6 @@ bl = {
 		tRef.remove();
 		bl.vals[bl.day][eid] = null;
 		$row.hide();
-	},
-
-	choose_day: function(day) {
-		if (bl.current) {
-			bl.current.off('child_added')
-		};
-		bl.current = bl.daily.child(day);
-		bl.current.on('value', function(snap) {
-			var vals = snap.val();
-			bl.day = snap.name();
-			bl.vals[bl.day] = vals;
-			if (bl.vals[bl.day] == null) {
-				bl.vals[bl.day] = [];
-			}
-			console.log('Done Values ' + bl.day + ': ' + vals);
-			bl.$lin.text('');
-			bl.$lout.text('');
-			bl.display_day(vals);
-			bl.current.off('value');
-		});
-		bl.current.on('child_added', function(snap) {
-			val = snap.val();
-			console.log('Add Values ' + snap.name() + ': ' + val);
-			bl.display(0, val);
-		});
 	},
 
 	init: function() {
