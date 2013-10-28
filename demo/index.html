@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bootstrap 101 Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="../../assets/js/html5shiv.js"></script>
+      <script src="../../assets/js/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+
+	<div class="container" id="bledger">
+		<form id="form-day">
+			<input name="day" id="bl-day" />
+			<input type="submit" value="change day" />
+		</form>
+		<div class="row">
+
+			<div class="col-md-6">
+				<center>In</center>
+				<form id="form-in">
+					<input name="direction" type="hidden" value="in" />
+					<input name="amount" placeholder="amount" />
+					<input name="tags" placeholder="tags (comma-separated)" />
+					<input name="description" placeholder="description" />
+					<input type="submit" value="add" />
+				</form>
+			</div>
+			<div class="col-md-6">
+				<center>Out</center>
+				<form id="form-out">
+					<input name="direction" type="hidden" value="out" />
+					<input name="amount" placeholder="amount" />
+					<input name="tags" placeholder="tags (comma-separated)" />
+					<input name="description" placeholder="description" />
+					<input type="submit" value="add" />
+				</form>
+			</div>
+
+			<div class="col-md-6" id="bl-in">
+			</div>
+			<div class="col-md-6" id="bl-out">
+			</div>
+
+		</div>
+	</div>
+
+    <!-- firebase client library -->
+	<script src="https://cdn.firebase.com/v0/firebase.js"></script>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="js/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
