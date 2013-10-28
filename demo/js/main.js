@@ -66,20 +66,21 @@ bl.start = function() {
 	var today = now.toISOString().split('T')[0];
 	bl.daily = bl.root.child('daily');
 	bl.choose_day(today);
-	$('#bl-day').val(today);
+	bl.$day.val(today);
 };
 
 $(function(){
 	var $l = $('#bledger');
 	bl.$lin = $('#bl-in');
 	bl.$lout = $('#bl-out');
+	bl.$day = $('#bl-day');
 
 	bl.start();
 
 	$('#form-day').submit(function(e) {
-		var today = $('#bl-day').val();
-		$('#bl-in').text('');
-		$('#bl-out').text('');
+		var today = $bl.day.val();
+		$bl.$lin.text('');
+		$bl.$lout.text('');
 		bl.choose_day(today);
 		return false
 	});
