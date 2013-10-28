@@ -51,17 +51,9 @@ bl = {
 	computeBalance: function(day) {
 		var now, yest, yesterday, balRef;
 		var balance = 0;
+		day = bl.getDay(day);
+		yesterday = bl.getDayBefore(day);
 		balRef = bl.root.child('balance').child(day);
-		if (day) {
-			now = new Date(day);
-			yest = new Date(day);
-		} else {
-			now = new Date();
-			yest = new Date();
-			day = now.toISOString().split('T')[0];
-		}
-		yest.setDate(now.getDate() - 1);
-		yesterday = yest.toISOString().split('T')[0];
 		$.each(
 			bl.vals[day],
 			function(i, e) {
@@ -71,9 +63,21 @@ bl = {
 					balance = balance - parseInt(e.amount);
 				}
 			});
-		balance = balance + bl.balance[yesterday];
-		bl.balance[day] = balance;
-		balRef.set(balance);
+		bl.setBalance(day, balance + bl.balance[yesterday]);
+		bl.displayBalance(day, yesterday);
+	},
+
+	displayBalance: function(day, yesterday) {
+		if (! day) {
+			day = bl.getDay(day);
+		}
+		if (! yesterday) {
+			yesterday = bl.getDayBefore(day);
+		}
+		bal = bl.balance[day];
+		bal_y = bl.balance[yesterday]
+		$('#bl-bal-now').text(bal);
+		$('#bl-bal-prev').text(bal_y);
 	},
 
 	getBalance: function() {
@@ -81,7 +85,29 @@ bl = {
 			var vals = snap.val();
 			console.log('Done ' + snap.name() + ': ' + vals);
 			bl.balance = vals;
+			bl.displayBalance();
 		});
+	},
+
+	getDay: function(day) {
+		if (day) {
+			return day
+		} else {
+			now = new Date();
+			return now.toISOString().split('T')[0];
+		}
+	},
+
+	getDayBefore: function(day) {
+		if (day) {
+			now = new Date(day);
+			yest = new Date(day);
+		} else {
+			now = new Date();
+			yest = new Date();
+		}
+		yest.setDate(now.getDate() - 1);
+		return yest.toISOString().split('T')[0];
 	},
 
 	getValues: function() {
@@ -143,6 +169,7 @@ bl = {
 	setBalance: function(day, bal) {
 		bl.balRef.child(day).set(bal);
 		bl.balance[day] = bal;
+		bl.displayBalance(day);
 	},
 
 	init: function() {
