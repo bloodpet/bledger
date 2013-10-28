@@ -5,17 +5,20 @@ bl = {
 	daily: null,
 	$lin: null,
 	$lout: null,
-	vals: [],
+	vals: {},
 
-	add: function(direction, amount, tags, description) {
-		var entry = {
-			direction: direction,
-			amount: amount,
-			tags: tags,
-			description: description,
-		};
-		bl.vals.push(entry);
-		bl.current.set(bl.vals);
+	add: function(entry) {
+		var now = new Date();
+		var time = now.getHours() + '-' +
+			now.getMinutes() + '-' +
+			now.getSeconds() + '-' +
+			now.getMilliseconds();
+		var tRef = bl.current.child(time);
+		entry['time'] = time;
+		console.log(entry);
+		bl.vals[time] = entry;
+		tRef.set(entry);
+		return time;
 	},
 
 	flush: function() {
@@ -23,18 +26,34 @@ bl = {
 	},
 
 	display: function(i, e) {
+		var eid = e.time;
 		var tags = '';
 		if (e.tags) tags = e.tags;
-		$row = $('<div class="row">' +
-			'<div class="col-md-4">' + e.amount + '</div>' +
-			'<div class="col-md-4">' + tags + '</div>' +
-			'<div class="col-md-4">' + e.description + '</div>' +
+		$row = $('<div class="row" id="row-' + eid + '">' +
+			'<span class="col-md-2"><a id="remove-' + eid +
+			'" href="#" class="remove-link" rid="' + eid +
+			'">Remove</a></span>' +
+			'<span class="col-md-2">' + e.amount + '</span>' +
+			'<span class="col-md-4">' + tags + '</span>' +
+			'<span class="col-md-4">' + e.description + '</span>' +
 			'</div>');
 		if (e.direction == 'in') {
 			bl.$lin.prepend($row);
 		} else {
 			bl.$lout.prepend($row);
 		}
+		$('#remove-' + eid).click(function() {
+			bl.remove(eid);
+		});
+	},
+
+	remove: function(eid) {
+		console.log('Remove ' + eid);
+		var $row = $('#row-' + eid);
+		var tRef = bl.current.child(eid);
+		tRef.remove();
+		bl.vals[eid] = null;
+		$row.hide();
 	},
 
 	choose_day: function(day) {
@@ -94,7 +113,7 @@ $(function(){
 		var vals = {direction: 'in', amount: 0, tags: [], description: ''};
 		$.each($(this).serializeArray(),
 			function(i, e) {vals[e.name] = e.value;});
-		bl.add(vals.direction, vals.amount, vals.tags, vals.description);
+		bl.add(vals);
 		return false;
 	});
 
@@ -102,7 +121,7 @@ $(function(){
 		var vals = {direction: 'out', amount: 0, tags: [], description: ''};
 		$.each($(this).serializeArray(),
 			function(i, e) {vals[e.name] = e.value;});
-		bl.add(vals.direction, vals.amount, vals.tags, vals.description);
+		bl.add(vals);
 		return false;
 	});
 
