@@ -50,6 +50,7 @@ bl = {
 	computeBalance: function(day) {
 		var now, yest, yesterday, balRef;
 		var balance = 0;
+		balRef = bl.root.child('balance').child(day);
 		if (day) {
 			now = new Date(day);
 			yest = new Date(day);
@@ -69,7 +70,7 @@ bl = {
 					balance = balance - parseInt(e.amount);
 				}
 			});
-		balRef = bl.root.child('balance').child(day);
+		balance = balance + bl.balance[yesterday];
 		bl.balance[day] = balance;
 		balRef.set(balance);
 	},
