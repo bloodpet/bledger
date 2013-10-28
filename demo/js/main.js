@@ -28,6 +28,7 @@ bl = {
 		else
 			entry.amount = 0;
 		bl.vals[bl.day][time] = entry;
+		bl.balance[bl.day] += entry.amount;
 		tRef.set(entry);
 		return time;
 	},
@@ -133,8 +134,10 @@ bl = {
 		var $row = $('#row-' + eid);
 		var tRef = bl.current.child(eid);
 		tRef.remove();
+		bl.balance[bl.day] -= bl.vals[bl.day][eid].amount;
 		bl.vals[bl.day][eid] = null;
 		$row.hide();
+		return false;
 	},
 
 	init: function() {
