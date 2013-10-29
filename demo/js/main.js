@@ -27,6 +27,8 @@ bl = {
 			entry.amount = parseInt(entry.amount);
 		else
 			entry.amount = 0;
+		if (! bl.vals[bl.day])
+			bl.vals[bl.day] = {}
 		bl.vals[bl.day][time] = entry;
 		bl.setBalance(bl.day, bl.balance[bl.day] + entry.amount);
 		tRef.set(entry);
