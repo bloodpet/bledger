@@ -87,7 +87,7 @@ bl = {
 			'<span class="col-md-2"><a id="remove-' + eid +
 			'" href="#" class="remove-link" rid="' + eid +
 			'">Remove</a></span>' +
-			'<span class="col-md-2">' + e.amount + '</span>' +
+			'<span class="col-md-2">' + e.amount.toFixed(2) + '</span>' +
 			'<span class="col-md-4">' + tags + '</span>' +
 			'<span class="col-md-4">' + e.description + '</span>' +
 			'</div>');
@@ -111,11 +111,11 @@ bl = {
 		bal = bl.balance[day];
 		bal_y = bl.balance[yesterday];
 		if (bal)
-			$('#bl-bal-now').text(bal);
+			$('#bl-bal-now').text(bal.toFixed(2));
 		else
 			$('#bl-bal-now').text(0);
 		if (bal_y)
-			$('#bl-bal-prev').text(bal_y);
+			$('#bl-bal-prev').text(bal_y.toFixed(2));
 		else
 			$('#bl-bal-prev').text(0);
 	},
