@@ -48,25 +48,31 @@ bl = {
 			console.log('Add Values ' + snap.name() + ': ' + val);
 			bl.display(0, val);
 		});
+		bl.displayBalance(day);
 	},
 
 	computeBalance: function(day) {
-		var now, yest, yesterday, balRef;
+		var now, dayBefore, balRef;
 		var balance = 0;
 		day = bl.getDay(day);
-		yesterday = bl.getDayBefore(day);
+		dayBefore = bl.getDayBefore(day);
 		balRef = bl.root.child('balance').child(day);
-		$.each(
-			bl.vals[day],
-			function(i, e) {
-				if (e.direction == 'in') {
-					balance = balance + parseInt(e.amount);
-				} else {
-					balance = balance - parseInt(e.amount);
-				}
-			});
-		bl.setBalance(day, balance + bl.balance[yesterday]);
-		bl.displayBalance(day, yesterday);
+		balBefore = 0;
+		if (bl.vals[day]) {
+			$.each(
+				bl.vals[day],
+				function(i, e) {
+					if (e.direction == 'in') {
+						balance = balance + parseInt(e.amount);
+					} else {
+						balance = balance - parseInt(e.amount);
+					}
+				});
+		};
+		if (bl.balance[dayBefore])
+			balBefore = parseInt(bl.balance[dayBefore]);
+		bl.setBalance(day, balance + balBefore);
+		bl.displayBalance(day, dayBefore);
 	},
 
 	displayBalance: function(day, yesterday) {
@@ -77,9 +83,15 @@ bl = {
 			yesterday = bl.getDayBefore(day);
 		}
 		bal = bl.balance[day];
-		bal_y = bl.balance[yesterday]
-		$('#bl-bal-now').text(bal);
-		$('#bl-bal-prev').text(bal_y);
+		bal_y = bl.balance[yesterday];
+		if (bal)
+			$('#bl-bal-now').text(bal);
+		else
+			$('#bl-bal-now').text(0);
+		if (bal_y)
+			$('#bl-bal-prev').text(bal_y);
+		else
+			$('#bl-bal-prev').text(0);
 	},
 
 	getBalance: function() {
@@ -93,7 +105,9 @@ bl = {
 
 	getDay: function(day) {
 		if (day) {
-			return day
+			return day;
+		} else if (bl.day) {
+			return bl.day;
 		} else {
 			now = new Date();
 			return now.toISOString().split('T')[0];
@@ -169,6 +183,7 @@ bl = {
 	},
 
 	setBalance: function(day, bal) {
+		console.log('set balance ' + bal);
 		bl.balRef.child(day).set(bal);
 		bl.balance[day] = bal;
 		bl.displayBalance(day);
