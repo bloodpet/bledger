@@ -79,6 +79,28 @@ bl = {
 		bl.displayBalance(day, dayBefore);
 	},
 
+	display: function(i, e) {
+		var eid = e.time;
+		var tags = '';
+		if (e.tags) tags = e.tags;
+		$row = $('<div class="row" id="row-' + eid + '">' +
+			'<span class="col-md-2"><a id="remove-' + eid +
+			'" href="#" class="remove-link" rid="' + eid +
+			'">Remove</a></span>' +
+			'<span class="col-md-2">' + e.amount + '</span>' +
+			'<span class="col-md-4">' + tags + '</span>' +
+			'<span class="col-md-4">' + e.description + '</span>' +
+			'</div>');
+		if (e.direction == 'in') {
+			bl.$lin.prepend($row);
+		} else {
+			bl.$lout.prepend($row);
+		}
+		$('#remove-' + eid).click(function() {
+			bl.remove(eid);
+		});
+	},
+
 	displayBalance: function(day, yesterday) {
 		if (! day) {
 			day = bl.getDay(day);
@@ -96,6 +118,18 @@ bl = {
 			$('#bl-bal-prev').text(bal_y);
 		else
 			$('#bl-bal-prev').text(0);
+	},
+
+	displayDay: function(vals) {
+		if (vals) {
+			$.each(vals, function(k, v) {
+				bl.display(k, v);
+			})
+		};
+	},
+
+	flush: function() {
+		bl.current.set([])
 	},
 
 	getBalance: function() {
@@ -147,42 +181,8 @@ bl = {
 			bl.vals = vals;
 			bl.$lin.text('');
 			bl.$lout.text('');
-			bl.display_day(vals[bl.day]);
+			bl.displayDay(vals[bl.day]);
 		});
-	},
-
-	display: function(i, e) {
-		var eid = e.time;
-		var tags = '';
-		if (e.tags) tags = e.tags;
-		$row = $('<div class="row" id="row-' + eid + '">' +
-			'<span class="col-md-2"><a id="remove-' + eid +
-			'" href="#" class="remove-link" rid="' + eid +
-			'">Remove</a></span>' +
-			'<span class="col-md-2">' + e.amount + '</span>' +
-			'<span class="col-md-4">' + tags + '</span>' +
-			'<span class="col-md-4">' + e.description + '</span>' +
-			'</div>');
-		if (e.direction == 'in') {
-			bl.$lin.prepend($row);
-		} else {
-			bl.$lout.prepend($row);
-		}
-		$('#remove-' + eid).click(function() {
-			bl.remove(eid);
-		});
-	},
-
-	display_day: function(vals) {
-		if (vals) {
-			$.each(vals, function(k, v) {
-				bl.display(k, v);
-			})
-		};
-	},
-
-	flush: function() {
-		bl.current.set([])
 	},
 
 	remove: function(eid) {
@@ -233,7 +233,7 @@ $(function(){
 		console.log('Chosen ' + today);
 		bl.$lin.text('');
 		bl.$lout.text('');
-		bl.display_day(bl.vals[today]);
+		bl.displayDay(bl.vals[today]);
 		bl.chooseDay(today);
 		return false
 	});
