@@ -272,4 +272,9 @@ $(function(){
 		return false;
 	});
 
+	$('#compute-balance').click(function() {
+		bl.computeBalance(bl.day);
+		return false;
+	});
+
 });
