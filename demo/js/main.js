@@ -30,12 +30,16 @@ bl = {
 		if (! bl.vals[bl.day])
 			bl.vals[bl.day] = {}
 		bl.vals[bl.day][time] = entry;
-		bl.setBalance(bl.day, bl.balance[bl.day] + entry.amount);
+		if (entry.direction == 'in')
+			bl.setBalance(bl.day, bl.balance[bl.day] + entry.amount);
+		else
+			bl.setBalance(bl.day, bl.balance[bl.day] - entry.amount);
 		tRef.set(entry);
 		return time;
 	},
 
-	choose_day: function(day) {
+	chooseDay: function(day) {
+		bl.$day.val(day);
 		if (bl.current) {
 			bl.current.off('child_added')
 		};
@@ -106,12 +110,22 @@ bl = {
 	getDay: function(day) {
 		if (day) {
 			return day;
-		} else if (bl.day) {
-			return bl.day;
 		} else {
 			now = new Date();
 			return now.toISOString().split('T')[0];
 		}
+	},
+
+	getDayAfter: function(day) {
+		if (day) {
+			now = new Date(day);
+			yest = new Date(day);
+		} else {
+			now = new Date();
+			yest = new Date();
+		}
+		yest.setDate(now.getDate() + 1);
+		return yest.toISOString().split('T')[0];
 	},
 
 	getDayBefore: function(day) {
@@ -175,7 +189,11 @@ bl = {
 		console.log('Remove ' + eid);
 		var $row = $('#row-' + eid);
 		var tRef = bl.current.child(eid);
-		bl.setBalance(bl.day, bl.balance[bl.day] - bl.vals[bl.day][eid].amount);
+		var entry = bl.vals[bl.day][eid];
+		if (entry.direction == 'in')
+			bl.setBalance(bl.day, bl.balance[bl.day] - entry.amount);
+		else
+			bl.setBalance(bl.day, bl.balance[bl.day] + entry.amount);
 		tRef.remove();
 		bl.vals[bl.day][eid] = null;
 		$row.hide();
@@ -194,8 +212,7 @@ bl = {
 		var today = now.toISOString().split('T')[0];
 		bl.balRef = bl.root.child('balance');
 		bl.daily = bl.root.child('daily');
-		bl.choose_day(today);
-		bl.$day.val(today);
+		bl.chooseDay(today);
 		bl.getBalance();
 		bl.getValues();
 	}
@@ -217,7 +234,7 @@ $(function(){
 		bl.$lin.text('');
 		bl.$lout.text('');
 		bl.display_day(bl.vals[today]);
-		bl.choose_day(today);
+		bl.chooseDay(today);
 		return false
 	});
 
@@ -234,6 +251,24 @@ $(function(){
 		$.each($(this).serializeArray(),
 			function(i, e) {vals[e.name] = e.value;});
 		bl.add(vals);
+		return false;
+	});
+
+	$('#day-after').click(function() {
+		var day = bl.getDayAfter(bl.day);
+		bl.chooseDay(day);
+		return false;
+	});
+
+	$('#day-before').click(function() {
+		var day = bl.getDayBefore(bl.day);
+		bl.chooseDay(day);
+		return false;
+	});
+
+	$('#day-today').click(function() {
+		var day = bl.getDay();
+		bl.chooseDay(day);
 		return false;
 	});
 
