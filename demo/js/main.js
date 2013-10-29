@@ -228,6 +228,10 @@ $(function(){
 
 	bl.init();
 
+	$('a').click(function (e) {
+		e.preventDefault();
+	});
+
 	$('#form-day').submit(function(e) {
 		var today = bl.$day.val();
 		console.log('Chosen ' + today);
