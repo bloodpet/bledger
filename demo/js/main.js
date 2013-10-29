@@ -24,7 +24,7 @@ bl = {
 		entry.tags = tags;
 		entry.time = time;
 		if (entry.amount)
-			entry.amount = parseInt(entry.amount);
+			entry.amount = parseFloat(entry.amount);
 		else
 			entry.amount = 0;
 		if (! bl.vals[bl.day])
@@ -66,15 +66,15 @@ bl = {
 			$.each(
 				bl.vals[day],
 				function(i, e) {
-					if (e.direction == 'in') {
-						balance = balance + parseInt(e.amount);
+					if (e && e.direction == 'in') {
+						balance = balance + parseFloat(e.amount);
 					} else {
-						balance = balance - parseInt(e.amount);
+						balance = balance - parseFloat(e.amount);
 					}
 				});
 		};
 		if (bl.balance[dayBefore])
-			balBefore = parseInt(bl.balance[dayBefore]);
+			balBefore = parseFloat(bl.balance[dayBefore]);
 		bl.setBalance(day, balance + balBefore);
 		bl.displayBalance(day, dayBefore);
 	},
